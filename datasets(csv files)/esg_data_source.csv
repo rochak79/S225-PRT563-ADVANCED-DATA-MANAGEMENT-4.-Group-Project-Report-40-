@@ -1,0 +1,11 @@
+source_id,source_name,source_type,reliability_category,update_frequency,cost_per_year,api_available
+300,Sustainalytics,Vendor,High,Quarterly,25000,TRUE
+301,MSCI,Vendor,High,Monthly,30000,TRUE
+302,Bloomberg,Vendor,Medium,Monthly,20000,TRUE
+303,Refinitiv,Vendor,High,Quarterly,22000,TRUE
+304,CDP,NGO,Medium,Yearly,5000,FALSE
+305,Company Report,Issuer,Variable,Yearly,0,FALSE
+306,Gov Registry,Gov,High,Yearly,0,FALSE
+307,NGO Watch,NGO,Low,Ad-hoc,0,FALSE
+308,NewsScrape,Internal,Medium,Daily,8000,TRUE
+309,IoT Sensors,Internal,Medium,Hourly,12000,TRUE

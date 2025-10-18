@@ -1,0 +1,11 @@
+company_id,company_name,ticker_symbol,country,industry_sector,market_capitalization,employee_count,headquarters_city
+1000,GreenTech Ltd,GRT,AU,Technology,1500000000,850,Sydney
+1001,EcoPower PLC,ECP,UK,Utilities,3200000000,1200,London
+1002,WaterPure Inc,WPI,US,Industrials,2100000000,950,Austin
+1003,SolarWave AG,SWA,DE,Energy,4000000000,1500,Berlin
+1004,BioPack SA,BPS,FR,Materials,800000000,600,Paris
+1005,UrbanTransit Co,UTC,CA,Industrials,1900000000,1100,Toronto
+1006,AgriSmart Ltd,AGM,AU,Consumer Staples,950000000,700,Melbourne
+1007,CloudHealth Inc,CHI,US,Health Care,2800000000,1300,San Jose
+1008,ReForest AB,RFA,SE,Materials,1200000000,500,Stockholm
+1009,BlueOcean BV,BOC,NL,Consumer Discretionary,1100000000,650,Amsterdam

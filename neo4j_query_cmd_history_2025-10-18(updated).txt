@@ -1,0 +1,1376 @@
+// Example: keep PageRank on Company nodes
+CALL gds.pageRank.write('coHold', {
+  relationshipWeightProperty:'weight',
+  writeProperty:'pagerank'
+});
+
+// Create a BI view directly from nodes with the new feature
+MATCH (c:Company)
+RETURN c.company_name AS company, c.pagerank AS influence;
+
+// Connect facts to dims (nice for browsing & fast MATCH)
+MATCH (f:FactESGPerformance)
+MERGE (c:DimCompany {company_id:f.company_id})
+MERGE (m:DimMetric  {metric_id:f.metric_id})
+MERGE (d:DimDate    {date:f.date})
+MERGE (f)-[:FOR_COMPANY]->(c)
+MERGE (f)-[:FOR_METRIC]->(m)
+MERGE (f)-[:ON_DATE]->(d);
+
+// Portfolio-weighted ESG by fund (materialize into :FundSnapshot)
+MATCH (f:InvestmentFund)-[h:HOLDS]->(c:Company)
+MATCH (c)-[a:ASSESSED_FOR]->(:ESGMetric {metric_code:'OVERALL'})
+WITH f, sum(h.weight_in_portfolio * a.overall_esg_score) AS wsum,
+         sum(h.weight_in_portfolio) AS wtot
+MERGE (s:FundSnapshot {fund_id: f.fund_id, as_of: date()})
+SET s.weighted_overall_esg = round(wsum / wtot,2),
+    s.total_holdings = wtot;
+
+// Example: keep PageRank on Company nodes
+CALL gds.pageRank.write('coHold', {
+  relationshipWeightProperty:'weight',
+  writeProperty:'pagerank'
+});
+
+// Create a BI view directly from nodes with the new feature
+MATCH (c:Company)
+RETURN c.company_name AS company, c.pagerank AS influence;
+
+MATCH (f:InvestmentFund)-[h:HOLDS]->(c:Company)
+OPTIONAL MATCH (c)-[a:ASSESSED_FOR]->(m:ESGMetric)
+WITH f,c,m,a,h
+RETURN
+  f.fund_code AS fund,
+  c.company_name AS company,
+  m.metric_code AS metric,
+  a.assessment_date AS date,
+  a.metric_value AS value,
+  a.overall_esg_score AS overall_esg,
+  coalesce(h.weight_in_portfolio,0.0) AS weight
+ORDER BY fund, company, metric, date;
+
+CALL apoc.export.csv.query(
+"
+MATCH (f:InvestmentFund)-[h:HOLDS]->(c:Company)
+OPTIONAL MATCH (c)-[a:ASSESSED_FOR]->(m:ESGMetric)
+WITH f,c,m,a,h
+RETURN
+  f.fund_code                         AS fund,
+  c.company_name                      AS company,
+  m.metric_code                       AS metric,
+  a.assessment_date                   AS date,
+  a.metric_value                      AS value,
+  a.overall_esg_score                 AS overall_esg,
+  coalesce(h.weight_in_portfolio,0.0) AS weight
+ORDER BY fund, company, metric, date
+",
+null,
+{stream:true, useTypes:true, batchSize:20000}
+)
+YIELD data
+RETURN data;        // <-- now the result is a single cell with the CSV text;
+
+CALL apoc.export.csv.query(
+"
+MATCH (f:InvestmentFund)-[h:HOLDS]->(c:Company)
+OPTIONAL MATCH (c)-[a:ASSESSED_FOR]->(m:ESGMetric)
+WITH f,c,m,a,h
+RETURN
+  f.fund_code                         AS fund,
+  c.company_name                      AS company,
+  m.metric_code                       AS metric,
+  a.assessment_date                   AS date,
+  a.metric_value                      AS value,
+  a.overall_esg_score                 AS overall_esg,
+  coalesce(h.weight_in_portfolio,0.0) AS weight
+ORDER BY fund, company, metric, date
+",
+null,
+{stream:true, useTypes:true, batchSize:20000}
+)
+YIELD data
+RETURN data;        // <-- now the result is a single cell with the CSV text;
+
+CALL apoc.export.csv.query(
+"
+MATCH (f:InvestmentFund)-[h:HOLDS]->(c:Company)
+OPTIONAL MATCH (c)-[a:ASSESSED_FOR]->(m:ESGMetric)
+WITH f,c,m,a,h
+RETURN
+  f.fund_code                         AS fund,
+  c.company_name                      AS company,
+  m.metric_code                       AS metric,
+  a.assessment_date                   AS date,
+  a.metric_value                      AS value,
+  a.overall_esg_score                 AS overall_esg,
+  coalesce(h.weight_in_portfolio,0.0) AS weight
+ORDER BY fund, company, metric, date
+",
+null,
+{stream:true, useTypes:true, batchSize:20000}
+)
+YIELD data
+RETURN data;        // <-- now the result is a single cell with the CSV text;
+
+CALL apoc.export.csv.query(
+  "
+  MATCH (f:InvestmentFund)-[h:HOLDS]->(c:Company)
+  OPTIONAL MATCH (c)-[a:ASSESSED_FOR]->(m:ESGMetric)
+  WITH f,c,m,a,h
+  RETURN
+    f.fund_code                         AS fund,
+    c.company_name                      AS company,
+    m.metric_code                       AS metric,
+    a.assessment_date                   AS date,
+    a.metric_value                      AS value,
+    a.overall_esg_score                 AS overall_esg,
+    coalesce(h.weight_in_portfolio,0.0) AS weight
+  ORDER BY fund, company, metric, date
+  ",
+  null,
+  {stream:true, useTypes:true, batchSize:20000}
+)
+YIELD data
+RETURN data;   // single cell containing the CSV text;
+
+CALL apoc.export.csv.query(
+  "
+  MATCH (f:InvestmentFund)-[h:HOLDS]->(c:Company)
+  OPTIONAL MATCH (c)-[a:ASSESSED_FOR]->(m:ESGMetric)
+  WITH f,c,m,a,h
+  RETURN
+    f.fund_code                         AS fund,
+    c.company_name                      AS company,
+    m.metric_code                       AS metric,
+    a.assessment_date                   AS date,
+    a.metric_value                      AS value,
+    a.overall_esg_score                 AS overall_esg,
+    coalesce(h.weight_in_portfolio,0.0) AS weight
+  ORDER BY fund, company, metric, date
+  ",
+  null,
+  {stream:true, useTypes:true, batchSize:20000}
+)
+YIELD data
+RETURN data;   // single cell containing the CSV text;
+
+CALL apoc.export.csv.query(
+  "
+  MATCH (f:InvestmentFund)-[h:HOLDS]->(c:Company)
+  OPTIONAL MATCH (c)-[a:ASSESSED_FOR]->(m:ESGMetric)
+  WITH f,c,m,a,h
+  RETURN
+    f.fund_code                         AS fund,
+    c.company_name                      AS company,
+    m.metric_code                       AS metric,
+    a.assessment_date                   AS date,
+    a.metric_value                      AS value,
+    a.overall_esg_score                 AS overall_esg,
+    coalesce(h.weight_in_portfolio,0.0) AS weight
+  ORDER BY fund, company, metric, date
+  ",
+  null,
+  {stream:true, useTypes:true, batchSize:20000}
+)
+YIELD data
+RETURN data;   // single cell containing the CSV text;
+
+CALL apoc.export.csv.query(
+"
+MATCH (f:InvestmentFund)-[h:HOLDS]->(c:Company)
+OPTIONAL MATCH (c)-[a:ASSESSED_FOR]->(m:ESGMetric)
+WITH f,c,m,a,h
+RETURN
+  f.fund_code                         AS fund,
+  c.company_name                      AS company,
+  m.metric_code                       AS metric,
+  a.assessment_date                   AS date,
+  a.metric_value                      AS value,
+  a.overall_esg_score                 AS overall_esg,
+  coalesce(h.weight_in_portfolio,0.0) AS weight
+ORDER BY fund, company, metric, date
+",
+null,
+{stream:true, useTypes:true, batchSize:20000}
+)
+YIELD data
+RETURN data;        // <-- now the result is a single cell with the CSV text;
+
+CALL apoc.export.csv.query(
+"
+MATCH (f:InvestmentFund)-[h:HOLDS]->(c:Company)
+OPTIONAL MATCH (c)-[a:ASSESSED_FOR]->(m:ESGMetric)
+WITH f,c,m,a,h
+RETURN
+  f.fund_code                         AS fund,
+  c.company_name                      AS company,
+  m.metric_code                       AS metric,
+  a.assessment_date                   AS date,
+  a.metric_value                      AS value,
+  a.overall_esg_score                 AS overall_esg,
+  coalesce(h.weight_in_portfolio,0.0) AS weight
+ORDER BY fund, company, metric, date
+",
+null,
+{stream:true, useTypes:true, batchSize:20000}
+)
+YIELD data
+RETURN data;        // <-- now the result is a single cell with the CSV text;
+
+CALL apoc.export.csv.query(
+"
+MATCH (f:InvestmentFund)-[h:HOLDS]->(c:Company)
+OPTIONAL MATCH (c)-[a:ASSESSED_FOR]->(m:ESGMetric)
+WITH f,c,m,a,h
+RETURN
+  f.fund_code                         AS fund,
+  c.company_name                      AS company,
+  m.metric_code                       AS metric,
+  a.assessment_date                   AS date,
+  a.metric_value                      AS value,
+  a.overall_esg_score                 AS overall_esg,
+  coalesce(h.weight_in_portfolio,0.0) AS weight
+ORDER BY fund, company, metric, date
+",
+null,
+{stream:true, useTypes:true, batchSize:20000}
+)
+YIELD data
+RETURN data;        // <-- now the result is a single cell with the CSV text;
+
+CALL apoc.export.csv.query(
+"
+MATCH (f:InvestmentFund)-[h:HOLDS]->(c:Company)
+OPTIONAL MATCH (c)-[a:ASSESSED_FOR]->(m:ESGMetric)
+WITH f,c,m,a,h
+RETURN
+  f.fund_code                         AS fund,
+  c.company_name                      AS company,
+  m.metric_code                       AS metric,
+  a.assessment_date                   AS date,
+  a.metric_value                      AS value,
+  a.overall_esg_score                 AS overall_esg,
+  coalesce(h.weight_in_portfolio,0.0) AS weight
+ORDER BY fund, company, metric, date
+",
+null,
+{stream:true, useTypes:true, batchSize:20000}
+)
+YIELD data
+RETURN data;        // <-- now the result is a single cell with the CSV text;
+
+CALL apoc.export.csv.query(
+"
+MATCH (f:InvestmentFund)-[h:HOLDS]->(c:Company)
+OPTIONAL MATCH (c)-[a:ASSESSED_FOR]->(m:ESGMetric)
+WITH f,c,m,a,h
+RETURN
+  f.fund_code                         AS fund,
+  c.company_name                      AS company,
+  m.metric_code                       AS metric,
+  a.assessment_date                   AS date,
+  a.metric_value                      AS value,
+  a.overall_esg_score                 AS overall_esg,
+  coalesce(h.weight_in_portfolio,0.0) AS weight
+ORDER BY fund, company, metric, date
+",
+null,                                   // <- no file on disk
+{stream:true, useTypes:true, batchSize:20000}
+);
+
+CALL apoc.export.csv.query(
+"
+MATCH (f:InvestmentFund)-[h:HOLDS]->(c:Company)
+OPTIONAL MATCH (c)-[a:ASSESSED_FOR]->(m:ESGMetric)
+WITH f,c,m,a,h
+RETURN
+  f.fund_code AS fund,
+  c.company_name AS company,
+  m.metric_code AS metric,
+  a.assessment_date AS date,
+  a.metric_value AS value,
+  a.overall_esg_score AS overall_esg,
+  coalesce(h.weight_in_portfolio,0.0) AS weight
+ORDER BY fund, company, metric, date
+",
+"esg_fact.csv",
+{useTypes:true, batchSize:20000}
+);
+
+MATCH (f:InvestmentFund)-[h:HOLDS]->(c:Company)
+OPTIONAL MATCH (c)-[a:ASSESSED_FOR]->(m:ESGMetric)
+WITH f,c,m,a,h
+RETURN
+  f.fund_code                         AS fund,
+  c.company_name                      AS company,
+  m.metric_code                       AS metric,
+  a.assessment_date                   AS date,
+  a.metric_value                      AS value,
+  a.overall_esg_score                 AS overall_esg,
+  coalesce(h.weight_in_portfolio,0.0) AS weight
+ORDER BY fund, company, metric, date;
+
+CALL apoc.export.csv.query(
+"
+MATCH (f:InvestmentFund)-[h:HOLDS]->(c:Company)
+OPTIONAL MATCH (c)-[a:ASSESSED_FOR]->(m:ESGMetric)
+WITH f,c,m,a,h   // <-- keep h in scope
+RETURN
+  f.fund_code                         AS fund,
+  c.company_name                      AS company,
+  m.metric_code                       AS metric,
+  a.assessment_date                   AS date,
+  a.metric_value                      AS value,
+  a.overall_esg_score                 AS overall_esg,
+  coalesce(h.weight_in_portfolio,0.0) AS weight
+",
+"esg_fact.csv",
+{batchSize:20000, useTypes:true}
+);
+
+CALL apoc.export.csv.query(
+  "
+  MATCH (f:InvestmentFund)-[h:HOLDS]->(c:Company)
+  OPTIONAL MATCH (c)-[a:ASSESSED_FOR]->(m:ESGMetric)
+  WITH f, c, m, a
+  RETURN f.fund_code   AS fund,
+         c.company_name AS company,
+         m.metric_code  AS metric,
+         a.assessment_date AS date,
+         a.metric_value AS value,
+         a.overall_esg_score AS overall_esg,
+         h.weight_in_portfolio AS weight
+  ",
+  "esg_fact.csv",
+  {batchSize:20000, useTypes:true}
+);
+
+MATCH (f:InvestmentFund)-[h:HOLDS]->(c:Company)
+RETURN f.fund_name, c.company_name, h.weight_in_portfolio, h.position_value
+LIMIT 10;
+
+CALL apoc.export.csv.query(
+  "
+  MATCH (f:InvestmentFund)-[h:HOLDS]->(c:Company)
+  OPTIONAL MATCH (c)-[a:ASSESSED_FOR]->(m:ESGMetric)
+  WITH f, c, m, a
+  RETURN f.fund_code   AS fund,
+         c.company_name AS company,
+         m.metric_code  AS metric,
+         a.assessment_date AS date,
+         a.metric_value AS value,
+         a.overall_esg_score AS overall_esg,
+         h.weight_in_portfolio AS weight
+  ",
+  "esg_fact.csv",
+  {batchSize:20000, useTypes:true}
+);
+MATCH (f:InvestmentFund)-[h:HOLDS]->(c:Company)
+RETURN f.fund_name, c.company_name, h.weight_in_portfolio, h.position_value
+LIMIT 10;
+
+CALL apoc.export.csv.query(
+  "
+  MATCH (f:InvestmentFund)-[h:HOLDS]->(c:Company)
+  OPTIONAL MATCH (c)-[a:ASSESSED_FOR]->(m:ESGMetric)
+  WITH f, c, m, a
+  RETURN f.fund_code   AS fund,
+         c.company_name AS company,
+         m.metric_code  AS metric,
+         a.assessment_date AS date,
+         a.metric_value AS value,
+         a.overall_esg_score AS overall_esg,
+         h.weight_in_portfolio AS weight
+  ",
+  "esg_fact.csv",
+  {batchSize:20000, useTypes:true}
+);
+
+MATCH (f:InvestmentFund)-[h:HOLDS]->(c:Company)
+CALL {
+  WITH c
+  MATCH (c)-[a:ASSESSED_FOR]->(:ESGMetric)
+  WITH a ORDER BY a.assessment_date DESC
+  RETURN a.overall_esg_score AS latest_overall
+  LIMIT 1
+}
+WITH f, h.weight_in_portfolio AS w, latest_overall
+WHERE latest_overall IS NOT NULL
+WITH f, sum(w * latest_overall) AS weighted_sum, sum(w) AS total_w
+RETURN f.fund_code AS fund, round(weighted_sum/total_w,2) AS weighted_overall_esg
+ORDER BY weighted_overall_esg DESC;
+
+CALL apoc.export.csv.query(
+  "
+  MATCH (f:InvestmentFund)-[h:HOLDS]->(c:Company)
+  OPTIONAL MATCH (c)-[a:ASSESSED_FOR]->(m:ESGMetric)
+  WITH f, c, m, a
+  RETURN f.fund_code   AS fund,
+         c.company_name AS company,
+         m.metric_code  AS metric,
+         a.assessment_date AS date,
+         a.metric_value AS value,
+         a.overall_esg_score AS overall_esg,
+         h.weight_in_portfolio AS weight
+  ",
+  "esg_fact.csv",
+  {batchSize:20000, useTypes:true}
+);
+
+// Avg overall ESG by sector & month
+MATCH (f:FactESGPerformance)-[:FOR_COMPANY]->(dc:DimCompany),
+      (f)-[:ON_DATE]->(dd:DimDate)
+RETURN dc.sector,
+       date.truncate('month', dd.date) AS month,
+       round(avg(f.overall_esg_score), 2) AS avg_esg
+ORDER BY month, avg_esg DESC;
+
+// Link facts to DimCompany
+MATCH (f:FactESGPerformance)
+MATCH (dc:DimCompany {company_id: f.company_id})
+MERGE (f)-[:FOR_COMPANY]->(dc);
+
+// Link facts to DimDate
+MATCH (f:FactESGPerformance)
+MATCH (dd:DimDate {date: f.date})
+MERGE (f)-[:ON_DATE]->(dd);
+
+// (Optional) link to DimMetric if you made that dimension
+MATCH (f:FactESGPerformance)
+MATCH (dm:DimMetric {metric_id: f.metric_id})
+MERGE (f)-[:FOR_METRIC]->(dm);
+
+CALL db.relationshipTypes();
+
+// Avg overall ESG by sector & month
+MATCH (f:FactESGPerformance)-[:FOR_COMPANY]->(dc:DimCompany),
+      (f)-[:ON_DATE]->(dd:DimDate)
+RETURN dc.sector, date.truncate('month', dd.date) AS month,
+       round(avg(f.overall_esg_score),2) AS avg_esg
+ORDER BY month, avg_esg DESC;
+
+// DIMENSIONS
+MERGE (d:DimDate {date: date('2024-01-01')}); // example
+
+// From your existing model:
+CREATE INDEX company_dim IF NOT EXISTS FOR (d:DimCompany) ON (d.company_id);
+CREATE INDEX fund_dim    IF NOT EXISTS FOR (d:DimFund)    ON (d.fund_id);
+CREATE INDEX metric_dim  IF NOT EXISTS FOR (d:DimMetric)  ON (d.metric_id);
+CREATE INDEX date_dim    IF NOT EXISTS FOR (d:DimDate)    ON (d.date);
+
+// Build dims
+MATCH (c:Company)
+MERGE (dc:DimCompany {company_id: c.company_id})
+  SET dc.company_name = c.company_name,
+      dc.country      = c.country,
+      dc.sector       = c.industry_sector;
+
+MATCH (f:InvestmentFund)
+MERGE (df:DimFund {fund_id: f.fund_id})
+  SET df.fund_code = f.fund_code, df.fund_name = f.fund_name, df.type = f.fund_type;
+
+MATCH (m:ESGMetric)
+MERGE (dm:DimMetric {metric_id: m.metric_id})
+  SET dm.metric_code = m.metric_code, dm.category = m.category;
+
+// FACT from the relationship Company-[:ASSESSED_FOR]->Metric
+// one row per (company, metric, date)
+CALL {
+  MATCH (c:Company)-[a:ASSESSED_FOR]->(m:ESGMetric)
+  WITH c,m,a, a.assessment_date AS d
+  MERGE (dd:DimDate {date:d})
+  MERGE (fact:FactESGPerformance {
+      company_id: c.company_id, metric_id: m.metric_id, date: d
+  })
+  SET fact.metric_value = a.metric_value,
+      fact.overall_esg_score = a.overall_esg_score,
+      fact.data_quality_flag = a.data_quality_flag
+} IN TRANSACTIONS OF 1000 ROWS;
+
+MATCH (a:Entity)-[r:RELTYPE]->(b:Entity)
+RETURN a,r,b;
+
+// One node per entity “class”
+MERGE (fm:Entity {name:'FundManager',  props:['managerId:int','managerName:string','email:string','specialization:string','yearsExperience:int','status:string']})
+MERGE (ifund:Entity {name:'InvestmentFund', props:['fundId:int','fundCode:string','fundName:string','fundType:string','esgStrategy:string','totalAssets:decimal','inceptionDate:date','managerId:int','minimumEsgScore:int']})
+MERGE (co:Entity {name:'PortfolioCompany', props:['companyId:int','companyName:string','tickerSymbol:string','country:string','industrySector:string','marketCapitalization:decimal','employeeCount:int','headquartersCity:string']})
+MERGE (met:Entity {name:'ESGMetric', props:['metricId:int','metricName:string','metricCode:string','category:string','unitOfMeasurement:string','dataType:string','higherIsBetter:boolean','status:string']})
+MERGE (src:Entity {name:'ESGDataSource', props:['sourceId:int','sourceName:string','sourceType:string','reliabilityCategory:string','updateFrequency:string','costPerYear:decimal','apiAvailable:boolean']})
+MERGE (rf:Entity  {name:'RegulatoryFramework', props:['frameworkId:int','frameworkName:string','frameworkCode:string','jurisdiction:string','effectiveDate:date','complianceMandatory:boolean']})
+MERGE (perf:Entity{name:'ESGPerformance', props:['performanceId:int','companyId:int','metricId:int','sourceId:int','assessmentDate:date','metricValue:decimal','dataQualityFlag:string','environmentalScore:decimal','socialScore:decimal','governanceScore:decimal','overallEsgScore:decimal']})
+
+// Edges between “classes” with cardinalities as properties you can display
+MERGE (fm)-[:RELTYPE {name:'MANAGES', from:'1', to:'many'}]->(ifund)
+MERGE (ifund)-[:RELTYPE {name:'HOLDS', from:'1', to:'many'}]->(co)
+MERGE (co)-[:RELTYPE {name:'ASSESSED_FOR', from:'1', to:'many'}]->(met)
+MERGE (src)-[:RELTYPE {name:'PROVIDES', from:'1', to:'many'}]->(met)
+MERGE (met)-[:RELTYPE {name:'DEFINED_BY', from:'many', to:'1'}]->(rf)
+MERGE (co)-[:RELTYPE {name:'HAS', from:'1', to:'many'}]->(perf)
+MERGE (met)<-[:RELTYPE {name:'MEASURES', from:'many', to:'1'}]-(perf)
+MERGE (src)<-[:RELTYPE {name:'SOURCED_FROM', from:'many', to:'1'}]-(perf);
+
+MATCH (a:Entity)-[r:RELTYPE]->(b:Entity)
+RETURN a,r,b;
+
+// One node per entity “class”
+MERGE (fm:Entity {name:'FundManager',  props:['managerId:int','managerName:string','email:string','specialization:string','yearsExperience:int','status:string']})
+MERGE (ifund:Entity {name:'InvestmentFund', props:['fundId:int','fundCode:string','fundName:string','fundType:string','esgStrategy:string','totalAssets:decimal','inceptionDate:date','managerId:int','minimumEsgScore:int']})
+MERGE (co:Entity {name:'PortfolioCompany', props:['companyId:int','companyName:string','tickerSymbol:string','country:string','industrySector:string','marketCapitalization:decimal','employeeCount:int','headquartersCity:string']})
+MERGE (met:Entity {name:'ESGMetric', props:['metricId:int','metricName:string','metricCode:string','category:string','unitOfMeasurement:string','dataType:string','higherIsBetter:boolean','status:string']})
+MERGE (src:Entity {name:'ESGDataSource', props:['sourceId:int','sourceName:string','sourceType:string','reliabilityCategory:string','updateFrequency:string','costPerYear:decimal','apiAvailable:boolean']})
+MERGE (rf:Entity  {name:'RegulatoryFramework', props:['frameworkId:int','frameworkName:string','frameworkCode:string','jurisdiction:string','effectiveDate:date','complianceMandatory:boolean']})
+MERGE (perf:Entity{name:'ESGPerformance', props:['performanceId:int','companyId:int','metricId:int','sourceId:int','assessmentDate:date','metricValue:decimal','dataQualityFlag:string','environmentalScore:decimal','socialScore:decimal','governanceScore:decimal','overallEsgScore:decimal']})
+
+// Edges between “classes” with cardinalities as properties you can display
+MERGE (fm)-[:RELTYPE {name:'MANAGES', from:'1', to:'many'}]->(ifund)
+MERGE (ifund)-[:RELTYPE {name:'HOLDS', from:'1', to:'many'}]->(co)
+MERGE (co)-[:RELTYPE {name:'ASSESSED_FOR', from:'1', to:'many'}]->(met)
+MERGE (src)-[:RELTYPE {name:'PROVIDES', from:'1', to:'many'}]->(met)
+MERGE (met)-[:RELTYPE {name:'DEFINED_BY', from:'many', to:'1'}]->(rf)
+MERGE (co)-[:RELTYPE {name:'HAS', from:'1', to:'many'}]->(perf)
+MERGE (met)<-[:RELTYPE {name:'MEASURES', from:'many', to:'1'}]-(perf)
+MERGE (src)<-[:RELTYPE {name:'SOURCED_FROM', from:'many', to:'1'}]-(perf);
+
+// Visualize the meta-schema
+MATCH (a:Entity)-[r:RELTYPE]->(b:Entity)
+RETURN a,r,b;
+
+MATCH p1 = (:FundManager)-[:MANAGES]->(:InvestmentFund)
+MATCH p2 = (:InvestmentFund)-[:HOLDS]->(:Company)
+MATCH p3 = (:Company)-[:ASSESSED_FOR]->(:ESGMetric)
+OPTIONAL MATCH p4 = (:DataSource)-[:PROVIDES]->(:ESGMetric)
+OPTIONAL MATCH p5 = (:ESGMetric)-[:DEFINED_BY]->(:RegFramework)
+RETURN p1,p2,p3,p4,p5  // renders a tidy schema-like picture
+LIMIT 1;
+
+// Neo4j’s built-in schema view (Neo4j Browser → Graph tab)
+CALL db.schema.visualization();
+
+MATCH p1 = (m:FundManager)-[:MANAGES]->(f:InvestmentFund)
+MATCH p2 = (f)-[:HOLDS]->(c:Company)
+MATCH p3 = (c)-[:ASSESSED_FOR]->(e:ESGMetric)
+OPTIONAL MATCH p4 = (ds:DataSource)-[:PROVIDES]->(e)
+OPTIONAL MATCH p5 = (e)-[:DEFINED_BY]->(rf:RegFramework)
+RETURN p1,p2,p3,p4,p5 LIMIT 400;
+
+MATCH p1 = (m:FundManager)-[:MANAGES]->(f:InvestmentFund)
+MATCH p2 = (f)-[:HOLDS]->(c:Company)
+MATCH p3 = (c)-[:ASSESSED_FOR]->(e:ESGMetric)
+OPTIONAL MATCH p4 = (ds:DataSource)-[:PROVIDES]->(e)
+OPTIONAL MATCH p5 = (e)-[:DEFINED_BY]->(rf:RegFramework)
+RETURN p1,p2,p3,p4,p5 LIMIT 400;
+
+MATCH p1 = (m:FundManager)-[:MANAGES]->(f:InvestmentFund)
+MATCH p2 = (f)-[:HOLDS]->(c:Company)
+MATCH p3 = (c)-[:ASSESSED_FOR]->(e:ESGMetric)
+OPTIONAL MATCH p4 = (ds:DataSource)-[:PROVIDES]->(e)
+OPTIONAL MATCH p5 = (e)-[:DEFINED_BY]->(rf:RegFramework)
+RETURN p1,p2,p3,p4,p5 LIMIT 400;
+
+MATCH p1 = (m:FundManager)-[:MANAGES]->(f:InvestmentFund)
+MATCH p2 = (f)-[:HOLDS]->(c:Company)
+MATCH p3 = (c)-[:ASSESSED_FOR]->(e:ESGMetric)
+OPTIONAL MATCH p4 = (ds:DataSource)-[:PROVIDES]->(e)
+OPTIONAL MATCH p5 = (e)-[:DEFINED_BY]->(rf:RegFramework)
+RETURN p1,p2,p3,p4,p5 LIMIT 400;
+
+MATCH p1 = (m:FundManager)-[:MANAGES]->(f:InvestmentFund)
+MATCH p2 = (f)-[:HOLDS]->(c:Company)
+MATCH p3 = (c)-[:ASSESSED_FOR]->(e:ESGMetric)
+OPTIONAL MATCH p4 = (ds:DataSource)-[:PROVIDES]->(e)
+OPTIONAL MATCH p5 = (e)-[:DEFINED_BY]->(rf:RegFramework)
+RETURN p1,p2,p3,p4,p5 LIMIT 400;
+
+MATCH (n:Company)        SET n.name = n.company_name;
+MATCH (n:InvestmentFund) SET n.name = n.fund_name;
+MATCH (n:FundManager)    SET n.name = n.manager_name;
+MATCH (n:ESGMetric)      SET n.name = n.metric_name;
+MATCH (n:DataSource)     SET n.name = n.source_name;
+MATCH (n:RegFramework)   SET n.name = n.framework_name;
+
+MATCH p1 = (m:FundManager)-[:MANAGES]->(f:InvestmentFund)
+MATCH p2 = (f)-[:HOLDS]->(c:Company)
+MATCH p3 = (c)-[:ASSESSED_FOR]->(e:ESGMetric)
+OPTIONAL MATCH p4 = (ds:DataSource)-[:PROVIDES]->(e)
+OPTIONAL MATCH p5 = (e)-[:DEFINED_BY]->(rf:RegFramework)
+RETURN p1,p2,p3,p4,p5 LIMIT 400;
+
+CALL gds.graph.list();
+
+CALL gds.nodeSimilarity.stream('companyFund',{topK:5})
+YIELD node1, node2, similarity
+RETURN gds.util.asNode(node1).company_name AS company1,
+       gds.util.asNode(node2).company_name AS company2,
+       round(similarity,3) AS similarity
+ORDER BY similarity DESC LIMIT 10;
+
+// GDS Similarity (companies with similar holders)
+CALL gds.graph.project(
+  'companyFund',
+  ['Company','InvestmentFund'],
+  {HOLDS:{type:'HOLDS', orientation:'UNDIRECTED'}}
+);
+CALL gds.nodeSimilarity.stream('companyFund',{topK:5})
+YIELD node1, node2, similarity
+WHERE 'Company' IN labels(gds.util.asNode(node1))
+  AND 'Company' IN labels(gds.util.asNode(node2))
+RETURN gds.util.asNode(node1).company_name AS company1,
+       gds.util.asNode(node2).company_name AS company2,
+       round(similarity,3) AS sim
+ORDER BY sim DESC
+LIMIT 10;
+CALL gds.graph.drop('companyFund');
+
+CALL gds.graph.drop('companyFund', false) YIELD graphName;
+
+// ----- GDS Similarity (companies with similar holders) -----
+CALL gds.graph.project('companyFund',['Company','InvestmentFund'],{HOLDS:{type:'HOLDS',orientation:'UNDIRECTED'}});
+CALL gds.nodeSimilarity.stream('companyFund',{topK:5})
+YIELD node1, node2, similarity
+WHERE 'Company' IN labels(gds.util.asNode(node1)) AND 'Company' IN labels(gds.util.asNode(node2))
+RETURN gds.util.asNode(node1).company_name AS company1, gds.util.asNode(node2).company_name AS company2, round(similarity,3) AS sim
+ORDER BY sim DESC LIMIT 10;
+CALL gds.graph.drop('companyFund');
+
+// WRITE back PageRank to nodes
+CALL gds.pageRank.write('coHold', {relationshipWeightProperty:'weight', writeProperty:'pagerank'});
+CALL gds.graph.drop('coHold');
+
+// Inspect top companies
+MATCH (c:Company)
+RETURN c.company_name AS company, round(c.pagerank,5) AS pagerank
+ORDER BY pagerank DESC LIMIT 10;
+
+// ----- GDS Similarity (companies with similar holders) -----
+CALL gds.graph.project('companyFund',['Company','InvestmentFund'],{HOLDS:{type:'HOLDS',orientation:'UNDIRECTED'}});
+CALL gds.nodeSimilarity.stream('companyFund',{topK:5})
+YIELD node1, node2, similarity
+WHERE 'Company' IN labels(gds.util.asNode(node1)) AND 'Company' IN labels(gds.util.asNode(node2))
+RETURN gds.util.asNode(node1).company_name AS company1, gds.util.asNode(node2).company_name AS company2, round(similarity,3) AS sim;
+
+// ----- GDS Centrality (PageRank co-holding) -----
+CALL gds.graph.project.cypher(
+  'coHold',
+  'MATCH (c:Company) RETURN id(c) AS id',
+  'MATCH (c1:Company)<-[:HOLDS]-(:InvestmentFund)-[:HOLDS]->(c2:Company) WHERE id(c1) < id(c2) RETURN id(c1) AS source, id(c2) AS target, count(*) AS weight'
+);
+CALL gds.pageRank.stream('coHold', {relationshipWeightProperty:'weight'})
+YIELD nodeId, score
+RETURN gds.util.asNode(nodeId).company_name AS company, round(score,5) AS pagerank
+ORDER BY pagerank DESC LIMIT 10;
+CALL gds.graph.drop('coHold');
+
+// ----- GDS Centrality (PageRank co-holding) -----
+CALL gds.graph.project.cypher(
+  'coHold',
+  'MATCH (c:Company) RETURN id(c) AS id',
+  'MATCH (c1:Company)<-[:HOLDS]-(:InvestmentFund)-[:HOLDS]->(c2:Company) WHERE id(c1) < id(c2) RETURN id(c1) AS source, id(c2) AS target, count(*) AS weight'
+);
+CALL gds.pageRank.stream('coHold', {relationshipWeightProperty:'weight'})
+YIELD nodeId, score
+RETURN gds.util.asNode(nodeId).company_name AS company, round(score,5) AS pagerank
+ORDER BY pagerank DESC LIMIT 10;
+CALL gds.graph.drop('coHold');
+
+// ----- GDS Centrality (PageRank co-holding) -----
+CALL gds.graph.project.cypher(
+  'coHold',
+  'MATCH (c:Company) RETURN id(c) AS id',
+  'MATCH (c1:Company)<-[:HOLDS]-(:InvestmentFund)-[:HOLDS]->(c2:Company) WHERE id(c1) < id(c2) RETURN id(c1) AS source, id(c2) AS target, count(*) AS weight'
+);
+CALL gds.pageRank.stream('coHold', {relationshipWeightProperty:'weight'})
+YIELD nodeId, score
+RETURN gds.util.asNode(nodeId).company_name AS company, round(score,5) AS pagerank
+ORDER BY pagerank DESC LIMIT 10;
+CALL gds.graph.drop('coHold');
+
+CALL gds.version();           // should return a version like 2.x.x
+SHOW PROCEDURES YIELD name    // optional: check gds.* exists
+WHERE name STARTS WITH 'gds.'
+RETURN name LIMIT 10;
+
+// WRITE back PageRank to nodes
+CALL gds.pageRank.write('coHold', {relationshipWeightProperty:'weight', writeProperty:'pagerank'});
+CALL gds.graph.drop('coHold');
+
+// Inspect top companies
+MATCH (c:Company)
+RETURN c.company_name AS company, round(c.pagerank,5) AS pagerank
+ORDER BY pagerank DESC LIMIT 10;
+
+// WRITE back PageRank to nodes
+CALL gds.pageRank.write('coHold', {relationshipWeightProperty:'weight', writeProperty:'pagerank'});
+CALL gds.graph.drop('coHold');
+
+// Inspect top companies
+MATCH (c:Company)
+RETURN c.company_name AS company, round(c.pagerank,5) AS pagerank
+ORDER BY pagerank DESC LIMIT 10;
+
+// ----- GDS Similarity (companies with similar holders) -----
+CALL gds.graph.project('companyFund',['Company','InvestmentFund'],{HOLDS:{type:'HOLDS',orientation:'UNDIRECTED'}});
+CALL gds.nodeSimilarity.stream('companyFund',{topK:5})
+YIELD node1, node2, similarity
+WHERE 'Company' IN labels(gds.util.asNode(node1)) AND 'Company' IN labels(gds.util.asNode(node2))
+RETURN gds.util.asNode(node1).company_name AS company1, gds.util.asNode(node2).company_name AS company2, round(similarity,3) AS sim
+ORDER BY sim DESC LIMIT 10;
+CALL gds.graph.drop('companyFund');
+
+// ----- GDS Centrality (PageRank co-holding) -----
+CALL gds.graph.project.cypher(
+  'coHold',
+  'MATCH (c:Company) RETURN id(c) AS id',
+  'MATCH (c1:Company)<-[:HOLDS]-(:InvestmentFund)-[:HOLDS]->(c2:Company) WHERE id(c1) < id(c2) RETURN id(c1) AS source, id(c2) AS target, count(*) AS weight'
+);
+CALL gds.pageRank.stream('coHold', {relationshipWeightProperty:'weight'})
+YIELD nodeId, score
+RETURN gds.util.asNode(nodeId).company_name AS company, round(score,5) AS pagerank
+ORDER BY pagerank DESC LIMIT 10;
+CALL gds.graph.drop('coHold');
+
+CALL gds.nodeSimilarity.stream('companyFund',{topK:5})
+YIELD node1, node2, similarity
+RETURN gds.util.asNode(node1).company_name AS company1,
+       gds.util.asNode(node2).company_name AS company2,
+       round(similarity,3) AS similarity
+ORDER BY similarity DESC LIMIT 10;
+
+// FundManager → Fund → Company → ESGMetric ← DataSource and (optional) → RegFramework
+MATCH p1 = (m:FundManager)-[:MANAGES]->(f:InvestmentFund)
+MATCH p2 = (f)-[:HOLDS]->(c:Company)
+MATCH p3 = (c)-[:ASSESSED_FOR]->(e:ESGMetric)
+OPTIONAL MATCH p4 = (ds:DataSource)-[:PROVIDES]->(e)
+OPTIONAL MATCH p5 = (e)-[:DEFINED_BY]->(rf:RegFramework)
+RETURN p1, p2, p3, p4, p5
+LIMIT 400;
+
+// Choose a specific fund
+WITH 'F010' AS targetFund
+MATCH p1 = (:FundManager)-[:MANAGES]->(f:InvestmentFund {fund_code: targetFund})
+MATCH p2 = (f)-[:HOLDS]->(c:Company)
+MATCH p3 = (c)-[:ASSESSED_FOR]->(e:ESGMetric)
+OPTIONAL MATCH p4 = (ds:DataSource)-[:PROVIDES]->(e)
+OPTIONAL MATCH p5 = (e)-[:DEFINED_BY]->(rf:RegFramework)
+RETURN p1, p2, p3, p4, p5;
+
+// Or pick a manager
+// WITH 'Alice Lee' AS managerName
+// MATCH p1 = (m:FundManager {manager_name: managerName})-[:MANAGES]->(f:InvestmentFund)
+// ... (same as above);
+
+// FundManager → Fund → Company → ESGMetric ← DataSource and (optional) → RegFramework
+MATCH p1 = (m:FundManager)-[:MANAGES]->(f:InvestmentFund)
+MATCH p2 = (f)-[:HOLDS]->(c:Company)
+MATCH p3 = (c)-[:ASSESSED_FOR]->(e:ESGMetric)
+OPTIONAL MATCH p4 = (ds:DataSource)-[:PROVIDES]->(e)
+OPTIONAL MATCH p5 = (e)-[:DEFINED_BY]->(rf:RegFramework)
+RETURN p1, p2, p3, p4, p5
+LIMIT 400;
+
+MATCH (f:InvestmentFund)-[:HOLDS]->(c:Company)-[:ASSESSED_FOR]->(m:ESGMetric)
+RETURN f, c, m
+LIMIT 30;
+
+// Count nodes by label
+MATCH (n)
+RETURN labels(n) AS label, count(*) AS total
+ORDER BY total DESC;
+
+// Count relationships by type
+MATCH ()-[r]->()
+RETURN type(r) AS rel_type, count(*) AS total
+ORDER BY total DESC;
+
+// FundManager MANAGES InvestmentFund
+MATCH (m:FundManager)-[r:MANAGES]->(f:InvestmentFund)
+RETURN m, r, f;
+
+// InvestmentFund HOLDS Company
+MATCH (f:InvestmentFund)-[r:HOLDS]->(c:Company)
+RETURN f, r, c;
+
+// Company ASSESSED_FOR ESGMetric
+MATCH (c:Company)-[r:ASSESSED_FOR]->(m:ESGMetric)
+RETURN c, r, m;
+
+// DataSource PROVIDES ESGMetric
+MATCH (s:DataSource)-[r:PROVIDES]->(m:ESGMetric)
+RETURN s, r, m;
+
+MATCH (a)-[r]->(b)
+RETURN a, r, b
+LIMIT 50;
+
+MATCH (a)-[r]->(b)
+RETURN a, r, b
+LIMIT 50;
+
+MATCH (n) RETURN n LIMIT 50;
+
+CALL db.relationshipTypes();
+
+CALL db.labels();
+
+CALL gds.graph.drop('coHold');
+
+// 3) Inspect the results on your nodes
+MATCH (c:Company)
+RETURN c.company_name AS company, round(c.pagerank,5) AS pagerank
+ORDER BY pagerank DESC
+LIMIT 10;
+
+// 2) WRITE PageRank scores back to the Company nodes
+CALL gds.pageRank.write(
+  'coHold',
+  { relationshipWeightProperty: 'weight', writeProperty: 'pagerank' }
+);
+
+// 1) Project the in-memory graph
+CALL gds.graph.project.cypher(
+  'coHold',
+  'MATCH (c:Company) RETURN id(c) AS id',
+  'MATCH (c1:Company)<-[:HOLDS]-(:InvestmentFund)-[:HOLDS]->(c2:Company)
+   WHERE id(c1) < id(c2)
+   RETURN id(c1) AS source, id(c2) AS target, count(*) AS weight'
+);
+
+// 0) Clean up any leftover graph with same name (won’t error if missing)
+CALL gds.graph.drop('coHold', false) YIELD graphName;
+
+// WRITE back PageRank to nodes
+CALL gds.pageRank.write('coHold', {relationshipWeightProperty:'weight', writeProperty:'pagerank'});
+CALL gds.graph.drop('coHold');
+
+// Inspect top companies
+MATCH (c:Company)
+RETURN c.company_name AS company, round(c.pagerank,5) AS pagerank
+ORDER BY pagerank DESC LIMIT 10;
+
+// ----- GDS Similarity (companies with similar holders) -----
+CALL gds.graph.project('companyFund',['Company','InvestmentFund'],{HOLDS:{type:'HOLDS',orientation:'UNDIRECTED'}});
+CALL gds.nodeSimilarity.stream('companyFund',{topK:5})
+YIELD node1, node2, similarity
+WHERE 'Company' IN labels(gds.util.asNode(node1)) AND 'Company' IN labels(gds.util.asNode(node2))
+RETURN gds.util.asNode(node1).company_name AS company1, gds.util.asNode(node2).company_name AS company2, round(similarity,3) AS sim
+ORDER BY sim DESC LIMIT 10;
+CALL gds.graph.drop('companyFund');
+
+// ----- GDS Similarity (companies with similar holders) -----
+CALL gds.graph.project('companyFund',['Company','InvestmentFund'],{HOLDS:{type:'HOLDS',orientation:'UNDIRECTED'}});
+CALL gds.nodeSimilarity.stream('companyFund',{topK:5})
+YIELD node1, node2, similarity
+WHERE 'Company' IN labels(gds.util.asNode(node1)) AND 'Company' IN labels(gds.util.asNode(node2))
+RETURN gds.util.asNode(node1).company_name AS company1, gds.util.asNode(node2).company_name AS company2, round(similarity,3) AS sim;
+
+// ----- GDS Centrality (PageRank co-holding) -----
+CALL gds.graph.project.cypher(
+  'coHold',
+  'MATCH (c:Company) RETURN id(c) AS id',
+  'MATCH (c1:Company)<-[:HOLDS]-(:InvestmentFund)-[:HOLDS]->(c2:Company) WHERE id(c1) < id(c2) RETURN id(c1) AS source, id(c2) AS target, count(*) AS weight'
+);
+CALL gds.pageRank.stream('coHold', {relationshipWeightProperty:'weight'})
+YIELD nodeId, score
+RETURN gds.util.asNode(nodeId).company_name AS company, round(score,5) AS pagerank
+ORDER BY pagerank DESC LIMIT 10;
+CALL gds.graph.drop('coHold');
+
+CALL gds.version();           // should return a version like 2.x.x
+SHOW PROCEDURES YIELD name    // optional: check gds.* exists
+WHERE name STARTS WITH 'gds.'
+RETURN name LIMIT 10;
+
+CALL gds.version();           // should return a version like 2.x.x
+SHOW PROCEDURES YIELD name    // optional: check gds.* exists
+WHERE name STARTS WITH 'gds.'
+RETURN name LIMIT 10;
+
+// ----- GDS Centrality (PageRank co-holding) -----
+CALL gds.graph.project.cypher(
+  'coHold',
+  'MATCH (c:Company) RETURN id(c) AS id',
+  'MATCH (c1:Company)<-[:HOLDS]-(:InvestmentFund)-[:HOLDS]->(c2:Company) WHERE id(c1) < id(c2) RETURN id(c1) AS source, id(c2) AS target, count(*) AS weight'
+);
+CALL gds.pageRank.stream('coHold', {relationshipWeightProperty:'weight'})
+YIELD nodeId, score
+RETURN gds.util.asNode(nodeId).company_name AS company, round(score,5) AS pagerank
+ORDER BY pagerank DESC LIMIT 10;
+CALL gds.graph.drop('coHold');
+
+// 4) Portfolio weighted ESG rollup (advanced)
+MATCH (f:InvestmentFund)-[h:HOLDS]->(c:Company)
+CALL {
+  WITH c
+  MATCH (c)-[a:ASSESSED_FOR]->(:ESGMetric)
+  WITH a ORDER BY a.assessment_date DESC
+  RETURN a.overall_esg_score AS latest_overall
+  LIMIT 1
+}
+WITH f, h.weight_in_portfolio AS w, latest_overall
+WHERE latest_overall IS NOT NULL
+WITH f, sum(w * latest_overall) AS weighted_sum, sum(w) AS total_w
+RETURN f.fund_code AS fund, round(weighted_sum/total_w,2) AS weighted_overall_esg ORDER BY weighted_overall_esg DESC;
+
+// 4) Portfolio weighted ESG rollup (advanced)
+MATCH (f:InvestmentFund)-[h:HOLDS]->(c:Company)
+CALL {
+  WITH c
+  MATCH (c)-[a:ASSESSED_FOR]->(:ESGMetric)
+  WITH a ORDER BY a.assessment_date DESC
+  RETURN a.overall_esg_score AS latest_overall
+  LIMIT 1
+}
+WITH f, h.weight_in_portfolio AS w, latest_overall
+WHERE latest_overall IS NOT NULL
+WITH f, sum(w * latest_overall) AS weighted_sum, sum(w) AS total_w
+RETURN f.fund_code AS fund, round(weighted_sum/total_w,2) AS weighted_overall_esg
+ORDER BY weighted_overall_esg DESC;
+
+// 2) Top holdings by weight for a fund (moderate)
+MATCH (:InvestmentFund {fund_code:"F010"})-[h:HOLDS]->(c:Company)
+RETURN c.company_name AS company, h.weight_in_portfolio AS weight
+ORDER BY weight DESC
+LIMIT 5;
+
+// 3) High carbon intensity companies (moderate)
+MATCH (c:Company)-[a:ASSESSED_FOR]->(m:ESGMetric {metric_code:"CO2_INT"})
+WHERE a.metric_value > 80
+RETURN c.company_name AS company, a.metric_value AS carbon_intensity
+ORDER BY carbon_intensity DESC;
+// “There are no Company nodes linked by ASSESSED_FOR to any ESGMetric node with metric_code = 'CO2_INT' where the metric_value is greater than 80.”;
+
+// 3) High carbon intensity companies (moderate)
+MATCH (c:Company)-[a:ASSESSED_FOR]->(m:ESGMetric {metric_code:"CO2_INT"})
+WHERE a.metric_value > 80
+RETURN c.company_name AS company, a.metric_value AS carbon_intensity
+ORDER BY carbon_intensity DESC;
+// “There are no Company nodes linked by ASSESSED_FOR to any ESGMetric node with metric_code = 'CO2_INT' where the metric_value is greater than 80.”;
+
+// 3) High carbon intensity companies (moderate)
+MATCH (c:Company)-[a:ASSESSED_FOR]->(m:ESGMetric {metric_code:"CO2_INT"})
+WHERE a.metric_value > 80
+RETURN c.company_name AS company, a.metric_value AS carbon_intensity
+ORDER BY carbon_intensity DESC;
+// “There are no Company nodes linked by ASSESSED_FOR to any ESGMetric node with metric_code = 'CO2_INT' where the metric_value is greater than 80.”;
+
+// 3) High carbon intensity companies (moderate)
+MATCH (c:Company)-[a:ASSESSED_FOR]->(m:ESGMetric {metric_code:"CO2_INT"})
+WHERE a.metric_value > 80
+RETURN c.company_name AS company, a.metric_value AS carbon_intensity
+ORDER BY carbon_intensity DESC;
+
+// 2) Top holdings by weight for a fund (moderate)
+MATCH (:InvestmentFund {fund_code:"F010"})-[h:HOLDS]->(c:Company)
+RETURN c.company_name AS company, h.weight_in_portfolio AS weight
+ORDER BY weight DESC
+LIMIT 5;
+
+// 1) Funds a manager oversees (basic)
+MATCH (m:FundManager {manager_id: 1})-[:MANAGES]->(f:InvestmentFund)
+RETURN m.manager_name AS manager, f.fund_code AS fund_code, f.fund_name AS fund_name
+ORDER BY fund_code;
+
+// --- Sanity check: Node counts by label ---
+// --- Combined node + relationship counts ---
+MATCH (n)
+RETURN 'Node:' + head(labels(n)) AS type, count(*) AS cnt
+UNION ALL
+MATCH ()-[r]->()
+RETURN 'Rel:' + type(r) AS type, count(*) AS cnt
+ORDER BY type;
+
+// --- Sanity check: Node counts by label ---
+MATCH (n)
+RETURN labels(n) AS label, count(*) AS cnt
+ORDER BY cnt DESC;
+
+// --- Sanity check: Relationship counts by type ---
+MATCH ()-[r]->()
+RETURN type(r) AS rel, count(*) AS cnt
+ORDER BY cnt DESC;
+
+// --- Sanity checks for nodes and relationships ---
+CALL {
+  MATCH (n)
+  RETURN labels(n) AS label, count(*) AS cnt
+  ORDER BY cnt DESC
+}
+UNION ALL
+CALL {
+  MATCH ()-[r]->()
+  RETURN [type(r)] AS label, count(*) AS cnt
+  ORDER BY cnt DESC
+};
+
+MATCH (n)-[r]->(m)
+RETURN n, r, m
+LIMIT 50;
+
+MATCH (f:InvestmentFund)-[r:HOLDS]->(c:Company)
+RETURN f, r, c;
+
+// show all companies and funds
+MATCH (f:InvestmentFund)-[r:HOLDS]->(c:Company)
+RETURN f, r, c;
+
+// show ESG performance links
+MATCH (c:Company)-[a:ASSESSED_FOR]->(m:ESGMetric)
+RETURN c, a, m;
+
+// show data source links
+MATCH (s:DataSource)-[p:PROVIDES]->(m:ESGMetric)
+RETURN s, p, m;
+
+// show fund managers
+MATCH (m:FundManager)-[r:MANAGES]->(f:InvestmentFund)
+RETURN m, r, f;
+
+MATCH (n) RETURN n LIMIT 50;
+
+MATCH (n:Company)         SET n.name = n.company_name;
+MATCH (n:InvestmentFund)  SET n.name = n.fund_name;
+MATCH (n:FundManager)     SET n.name = n.manager_name;
+MATCH (n:ESGMetric)       SET n.name = n.metric_name;
+MATCH (n:DataSource)      SET n.name = n.source_name;
+MATCH (n:RegFramework)    SET n.name = n.framework_name;
+MATCH (n:AuditEvent)      SET n.name = n.table_name;
+
+// --- 4) Sanity checks ---
+MATCH (n) RETURN labels(n) AS label, count(*) AS cnt ORDER BY cnt DESC;
+MATCH ()-[r]->() RETURN type(r) AS rel, count(*) AS cnt ORDER BY cnt DESC;
+
+// --- 4) Sanity checks ---
+MATCH (n) RETURN labels(n) AS label, count(*) AS cnt ORDER BY cnt DESC;
+MATCH ()-[r]->() RETURN type(r) AS rel, count(*) AS cnt ORDER BY cnt DESC;
+
+// --- 4) Sanity checks ---
+MATCH (n) RETURN labels(n) AS label, count(*) AS cnt ORDER BY cnt DESC;
+MATCH ()-[r]->() RETURN type(r) AS rel, count(*) AS cnt ORDER BY cnt DESC;
+
+// PROVIDES: DataSource -> ESGMetric inferred from esg_performance
+LOAD CSV WITH HEADERS FROM 'file:///esg_performance.csv' AS row
+MATCH (s:DataSource {source_id: toInteger(row.source_id)})
+MATCH (m:ESGMetric {metric_id: toInteger(row.metric_id)})
+MERGE (s)-[:PROVIDES]->(m);
+
+// INVESTMENT_POSITION -> relationship with properties
+LOAD CSV WITH HEADERS FROM 'file:///investment_position.csv' AS row
+WITH row,
+     split(row.position_date,'/') AS p
+WITH row,
+     CASE
+       WHEN row.position_date CONTAINS '-' THEN row.position_date
+       ELSE p[2] + '-' +
+            (CASE WHEN size(p[1]) = 1 THEN '0' + p[1] ELSE p[1] END) + '-' +
+            (CASE WHEN size(p[0]) = 1 THEN '0' + p[0] ELSE p[0] END)
+     END AS isoDate
+MATCH (f:InvestmentFund {fund_id: toInteger(row.fund_id)})
+MATCH (c:Company        {company_id: toInteger(row.company_id)})
+MERGE (f)-[h:HOLDS {position_id: toInteger(row.position_id)}]->(c)
+SET  h.position_date       = date(isoDate),
+     h.position_value      = toFloat(row.position_value),
+     h.weight_in_portfolio = toFloat(row.weight_in_portfolio);
+
+// ASSESSED_FOR: Company -> ESGMetric with properties
+LOAD CSV WITH HEADERS FROM 'file:///esg_performance.csv' AS row
+MATCH (c:Company {company_id: toInteger(row.company_id)})
+MATCH (m:ESGMetric {metric_id: toInteger(row.metric_id)})
+MERGE (c)-[a:ASSESSED_FOR {performance_id: toInteger(row.performance_id)}]->(m)
+SET a.assessment_date = date(row.assessment_date),
+    a.metric_value = toFloat(row.metric_value),
+    a.data_quality_flag = CASE toLower(row.data_quality_flag) WHEN 'true' THEN true WHEN '1' THEN true ELSE false END,
+    a.environmental_score = toFloat(row.environmental_score),
+    a.social_score = toFloat(row.social_score),
+    a.governance_score = toFloat(row.governance_score),
+    a.overall_esg_score = toFloat(row.overall_esg_score);
+
+// Link managers to funds using manager_id already on the Fund nodes
+// MANAGES: FundManager -> InvestmentFund
+MATCH (m:FundManager), (f:InvestmentFund)
+WHERE m.manager_id = f.manager_id
+MERGE (m)-[:MANAGES]->(f);
+
+// INVESTMENT_POSITION -> relationship with properties
+LOAD CSV WITH HEADERS FROM 'file:///investment_position.csv' AS row
+MATCH (f:InvestmentFund {fund_id: toInteger(row.fund_id)})
+MATCH (c:Company        {company_id: toInteger(row.company_id)})
+MERGE (f)-[h:HOLDS {position_id: toInteger(row.position_id)}]->(c)
+SET h.position_date       = date(
+      CASE
+        WHEN row.position_date CONTAINS '-' THEN row.position_date
+        ELSE
+          // convert d/M/yyyy to yyyy-MM-dd
+          split(row.position_date,'/')[2] + '-' +
+          (CASE WHEN size(split(row.position_date,'/')[1])=1 THEN '0'+split(row.position_date,'/')[1] ELSE split(row.position_date,'/')[1] END) + '-' +
+          (CASE WHEN size(split(row.position_date,'/')[0])=1 THEN '0'+split(row.position_date,'/')[0] ELSE split(row.position_date,'/')[0] END)
+      END
+    ),
+    h.position_value      = toFloat(row.position_value),
+    h.weight_in_portfolio = toFloat(row.weight_in_portfolio);
+
+// Link managers to funds using manager_id already on the Fund nodes
+MATCH (m:FundManager), (f:InvestmentFund)
+WHERE m.manager_id = f.manager_id
+MERGE (m)-[:MANAGES]->(f);
+
+LOAD CSV WITH HEADERS FROM 'file:///esg_performance.csv' AS row
+WITH row, split(row.assessment_date,'/') AS p
+WITH row,
+     CASE
+       WHEN row.assessment_date CONTAINS '-' THEN row.assessment_date
+       ELSE p[2] + '-' +
+            (CASE WHEN size(p[1]) = 1 THEN '0' + p[1] ELSE p[1] END) + '-' +
+            (CASE WHEN size(p[0]) = 1 THEN '0' + p[0] ELSE p[0] END)
+     END AS isoDate
+MATCH (c:Company {company_id: toInteger(row.company_id)})
+MATCH (m:ESGMetric {metric_id: toInteger(row.metric_id)})
+MERGE (c)-[a:ASSESSED_FOR {performance_id: toInteger(row.performance_id)}]->(m)
+SET a.assessment_date   = date(isoDate),
+    a.metric_value      = toFloat(row.metric_value),
+    a.data_quality_flag = toLower(row.data_quality_flag) IN ['true','1','yes'],
+    a.environmental_score = toFloat(row.environmental_score),
+    a.social_score        = toFloat(row.social_score),
+    a.governance_score    = toFloat(row.governance_score),
+    a.overall_esg_score   = toFloat(row.overall_esg_score);
+
+LOAD CSV WITH HEADERS FROM 'file:///audit_trail.csv' AS row
+MERGE (a:AuditEvent {audit_id: toInteger(row.audit_id)})
+SET a.table_name = row.table_name,
+    a.record_id = toInteger(row.record_id),
+    a.change_type = row.change_type,
+    a.change_date = datetime(replace(row.change_date,' ','T')),
+    a.user_id = row.user_id,
+    a.old_values = row.old_values,
+    a.new_values = row.new_values;
+
+MATCH (n) 
+WHERE n.esg_strategy IS NOT NULL
+RETURN DISTINCT "node" as entity, n.esg_strategy AS esg_strategy LIMIT 25
+UNION ALL 
+MATCH ()-[r]-() 
+WHERE r.esg_strategy IS NOT NULL
+RETURN DISTINCT "relationship" AS entity, r.esg_strategy AS esg_strategy LIMIT 25;
+
+LOAD CSV WITH HEADERS FROM 'file:///regulatory_framework.csv' AS row
+WITH row, split(row.effective_date,'/') AS p
+WITH row,
+     CASE
+       WHEN row.effective_date CONTAINS '-' THEN row.effective_date
+       ELSE p[2] + '-' +
+            (CASE WHEN size(p[1]) = 1 THEN '0' + p[1] ELSE p[1] END) + '-' +
+            (CASE WHEN size(p[0]) = 1 THEN '0' + p[0] ELSE p[0] END)
+     END AS isoDate
+MERGE (r:RegFramework {framework_id: toInteger(row.framework_id)})
+SET r.framework_name        = row.framework_name,
+    r.framework_code        = row.framework_code,
+    r.jurisdiction          = row.jurisdiction,
+    r.effective_date        = date(isoDate),
+    r.compliance_mandatory  = CASE toLower(row.compliance_mandatory)
+                                WHEN 'true' THEN true
+                                WHEN '1'    THEN true
+                                WHEN 'yes'  THEN true
+                                ELSE false END;
+
+// REGULATORY_FRAMEWORK
+LOAD CSV WITH HEADERS FROM 'file:///regulatory_framework.csv' AS row
+MERGE (r:RegFramework {framework_id: toInteger(row.framework_id)})
+SET r.framework_name = row.framework_name,
+    r.framework_code = row.framework_code,
+    r.jurisdiction = row.jurisdiction,
+    r.effective_date = date(row.effective_date),
+    r.compliance_mandatory = CASE toLower(row.compliance_mandatory) WHEN 'true' THEN true WHEN '1' THEN true ELSE false END;
+
+// ESG_DATA_SOURCE
+LOAD CSV WITH HEADERS FROM 'file:///esg_data_source.csv' AS row
+MERGE (s:DataSource {source_id: toInteger(row.source_id)})
+SET s.source_name = row.source_name,
+    s.source_type = row.source_type,
+    s.reliability_category = row.reliability_category,
+    s.update_frequency = row.update_frequency,
+    s.cost_per_year = toFloat(row.cost_per_year),
+    s.api_available = CASE toLower(row.api_available) WHEN 'true' THEN true WHEN '1' THEN true ELSE false END;
+
+// ESG_METRIC
+LOAD CSV WITH HEADERS FROM 'file:///esg_metric.csv' AS row
+MERGE (m:ESGMetric {metric_id: toInteger(row.metric_id)})
+SET m.metric_name = row.metric_name,
+    m.metric_code = row.metric_code,
+    m.category = row.category,
+    m.unit_of_measurement = row.unit_of_measurement,
+    m.data_type = row.data_type,
+    m.higher_is_better = CASE toLower(row.higher_is_better) WHEN 'true' THEN true WHEN '1' THEN true ELSE false END,
+    m.status = row.status;
+
+// PORTFOLIO_COMPANY
+LOAD CSV WITH HEADERS FROM 'file:///portfolio_company.csv' AS row
+MERGE (c:Company {company_id: toInteger(row.company_id)})
+SET c.company_name = row.company_name,
+    c.ticker_symbol = row.ticker_symbol,
+    c.country = row.country,
+    c.industry_sector = row.industry_sector,
+    c.market_capitalization = toFloat(row.market_capitalization),
+    c.employee_count = toInteger(row.employee_count),
+    c.headquarters_city = row.headquarters_city;
+
+LOAD CSV WITH HEADERS FROM 'file:///investment_fund.csv' AS row
+// break the slash date into parts if needed
+WITH row, split(row.inception_date,'/') AS parts
+// build a safe ISO date string YYYY-MM-DD (pad day/month)
+WITH row,
+     CASE
+       WHEN row.inception_date CONTAINS '-' THEN row.inception_date
+       ELSE parts[2] + '-' +
+            (CASE WHEN size(parts[1]) = 1 THEN '0' + parts[1] ELSE parts[1] END) + '-' +
+            (CASE WHEN size(parts[0]) = 1 THEN '0' + parts[0] ELSE parts[0] END)
+     END AS isoDate
+MERGE (f:InvestmentFund {fund_id: toInteger(row.fund_id)})
+SET f.fund_code         = row.fund_code,
+    f.fund_name         = row.fund_name,
+    f.fund_type         = row.fund_type,
+    f.esg_strategy      = row.esg_strategy,
+    f.total_assets      = toFloat(row.total_assets),
+    f.inception_date    = date(isoDate),
+    f.manager_id        = toInteger(row.manager_id),
+    f.minimum_esg_score = toInteger(row.minimum_esg_score);
+
+LOAD CSV WITH HEADERS FROM 'file:///investment_fund.csv' AS row
+WITH row,
+     split(row.inception_date, '/') AS parts
+WITH row,
+     parts[2] + '-' + 
+     CASE WHEN size(parts[1]) = 1 THEN '0' + parts[1] ELSE parts[1] END + '-' +
+     CASE WHEN size(parts[0]) = 1 THEN '0' + parts[0] ELSE parts[0] END AS isoDate,
+     row
+MERGE (f:InvestmentFund {fund_id: toInteger(row.fund_id)})
+SET f.fund_code         = row.fund_code,
+    f.fund_name         = row.fund_name,
+    f.fund_type         = row.fund_type,
+    f.esg_strategy      = row.esg_strategy,
+    f.total_assets      = toFloat(row.total_assets),
+    f.inception_date    = date(isoDate),
+    f.manager_id        = toInteger(row.manager_id),
+    f.minimum_esg_score = toInteger(row.minimum_esg_score);
+
+LOAD CSV WITH HEADERS FROM 'file:///investment_fund.csv' AS row
+WITH row,
+     // split on '/' and map to day, month, year
+     CASE
+       WHEN row.inception_date CONTAINS '-' THEN row.inception_date
+       ELSE apoc.text.join([
+              split(row.inception_date,'/')[2],        // year
+              lpad(split(row.inception_date,'/')[1],2,'0'), // month
+              lpad(split(row.inception_date,'/')[0],2,'0')  // day
+            ], '-')
+     END AS isoInception
+MERGE (f:InvestmentFund {fund_id: toInteger(row.fund_id)})
+SET f.fund_code        = row.fund_code,
+    f.fund_name        = row.fund_name,
+    f.fund_type        = row.fund_type,
+    f.esg_strategy     = row.esg_strategy,
+    f.total_assets     = toFloat(row.total_assets),
+    f.inception_date   = date(isoInception),   // now safe
+    f.manager_id       = toInteger(row.manager_id),
+    f.minimum_esg_score= toInteger(row.minimum_esg_score);
+
+// INVESTMENT_FUND
+LOAD CSV WITH HEADERS FROM 'file:///investment_fund.csv' AS row
+MERGE (f:InvestmentFund {fund_id: toInteger(row.fund_id)})
+SET f.fund_code = row.fund_code,
+    f.fund_name = row.fund_name,
+    f.fund_type = row.fund_type,
+    f.esg_strategy = row.esg_strategy,
+    f.total_assets = toFloat(row.total_assets),
+    f.inception_date = date(row.inception_date),
+    f.manager_id = toInteger(row.manager_id),
+    f.minimum_esg_score = toInteger(row.minimum_esg_score);
+
+LOAD CSV WITH HEADERS FROM 'file:///fund_manager.csv' AS row
+MERGE (m:FundManager {manager_id: toInteger(row.manager_id)})
+SET m.manager_name = row.manager_name,
+    m.email = row.email,
+    m.specialization = row.specialization,
+    m.years_experience = toInteger(row.years_experience),
+    m.status = row.status;
+
+SHOW SETTINGS YIELD name, value
+WHERE name = 'server.directories.import'
+RETURN value;
+
+LOAD CSV WITH HEADERS FROM 'file:///fund_manager.csv' AS row
+MERGE (m:FundManager {manager_id: toInteger(row.manager_id)})
+SET m.manager_name = row.manager_name,
+    m.email = row.email,
+    m.specialization = row.specialization,
+    m.years_experience = toInteger(row.years_experience),
+    m.status = row.status;
+
+// FUND_MANAGER
+LOAD CSV WITH HEADERS FROM
+'file:///D:/Charles%20Darwin%20University/S225%20PRT563%20ADVANCED%20DATA%20MANAGEMENT/assignnment%203/datasets/fund_manager.csv' AS row
+RETURN row LIMIT 1;
+MERGE (m:FundManager {manager_id: toInteger(row.manager_id)})
+SET m.manager_name = row.manager_name,
+    m.email = row.email,
+    m.specialization = row.specialization,
+    m.years_experience = toInteger(row.years_experience),
+    m.status = row.status;
+
+// FUND_MANAGER
+LOAD CSV WITH HEADERS FROM 'file:///fund_manager.csv' AS row
+MERGE (m:FundManager {manager_id: toInteger(row.manager_id)})
+SET m.manager_name = row.manager_name,
+    m.email = row.email,
+    m.specialization = row.specialization,
+    m.years_experience = toInteger(row.years_experience),
+    m.status = row.status;
+
+// FUND_MANAGER
+LOAD CSV WITH HEADERS FROM 'file:///datasets/fund_manager.csv' AS row
+MERGE (m:FundManager {manager_id: toInteger(row.manager_id)})
+SET m.manager_name = row.manager_name,
+    m.email = row.email,
+    m.specialization = row.specialization,
+    m.years_experience = toInteger(row.years_experience),
+    m.status = row.status;
+
+// FUND_MANAGER
+LOAD CSV WITH HEADERS FROM 'D:\Charles Darwin University\S225 PRT563 ADVANCED DATA MANAGEMENT\assignnment 3\datasets\fund_manager.csv
+' AS row
+MERGE (m:FundManager {manager_id: toInteger(row.manager_id)})
+SET m.manager_name = row.manager_name,
+    m.email = row.email,
+    m.specialization = row.specialization,
+    m.years_experience = toInteger(row.years_experience),
+    m.status = row.status;
+
+// FUND_MANAGER
+LOAD CSV WITH HEADERS FROM 'file:///fund_manager.csv' AS row
+MERGE (m:FundManager {manager_id: toInteger(row.manager_id)})
+SET m.manager_name = row.manager_name,
+    m.email = row.email,
+    m.specialization = row.specialization,
+    m.years_experience = toInteger(row.years_experience),
+    m.status = row.status;
+
+// 1) Constraints / Indexes ---
+CREATE CONSTRAINT fundManager_pk IF NOT EXISTS FOR (m:FundManager) REQUIRE m.manager_id IS UNIQUE;
+CREATE CONSTRAINT fund_pk        IF NOT EXISTS FOR (f:InvestmentFund) REQUIRE f.fund_id IS UNIQUE;
+CREATE CONSTRAINT company_pk     IF NOT EXISTS FOR (c:Company) REQUIRE c.company_id IS UNIQUE;
+CREATE CONSTRAINT metric_pk      IF NOT EXISTS FOR (m:ESGMetric) REQUIRE m.metric_id IS UNIQUE;
+CREATE CONSTRAINT source_pk      IF NOT EXISTS FOR (s:DataSource) REQUIRE s.source_id IS UNIQUE;
+CREATE CONSTRAINT framework_pk   IF NOT EXISTS FOR (r:RegFramework) REQUIRE r.framework_id IS UNIQUE;
+
+MATCH (n) DETACH DELETE n;
+
+RETURN "Connected" AS status;
+
+:welcome
+
+:welcome
+
+:welcome
+
+:welcome
+
+:connect
+
+MATCH (n) DETACH DELETE n;

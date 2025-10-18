@@ -1,0 +1,13 @@
+file,source,format,nodes,relationships,properties,time,rows,batchSize,batches,done,data
+null,statement: cols(7),csv,0,0,70,21,10,20000,1,true,"""fund"",""company"",""metric"",""date"",""value"",""overall_esg"",""weight""
+""F010"",""GreenTech Ltd"",""CO2_INT"",""2024-06-01"",""50.0"",""64.0"",""0.03""
+""F011"",""EcoPower PLC"",""WATER_USE"",""2024-06-02"",""53.7"",""66.0"",""0.034""
+""F012"",""WaterPure Inc"",""WASTE_REC"",""2024-06-03"",""57.4"",""68.0"",""0.038""
+""F013"",""SolarWave AG"",""BOARD_DIV"",""2024-06-04"",""61.1"",""70.0"",""0.042""
+""F014"",""BioPack SA"",""INJURY_RT"",""2024-06-05"",""64.8"",""72.0"",""0.046""
+""F015"",""UrbanTransit Co"",""DATA_BR"",""2024-06-06"",""68.5"",""74.0"",""0.05""
+""F016"",""AgriSmart Ltd"",""WHISTLE"",""2024-06-07"",""72.2"",""64.0"",""0.054""
+""F017"",""CloudHealth Inc"",""REN_SHARE"",""2024-06-08"",""75.9"",""66.0"",""0.058""
+""F018"",""ReForest AB"",""GPG"",""2024-06-09"",""79.6"",""68.0"",""0.062""
+""F019"",""BlueOcean BV"",""DISC"",""2024-06-10"",""83.3"",""70.0"",""0.066""
+"

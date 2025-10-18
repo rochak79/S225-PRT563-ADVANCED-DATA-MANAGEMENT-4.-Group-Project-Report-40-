@@ -1,0 +1,11 @@
+manager_id,manager_name,email,specialization,years_experience,status
+1,Alex Turner,alexturner@bluefunds.com,Equity,12,Active
+2,Bella Singh,bellasingh@bluefunds.com,Fixed Income,9,Active
+3,Carlos Mendes,carlosmendes@bluefunds.com,ESG,14,Active
+4,Diana Park,dianapark@bluefunds.com,Small Cap,7,Active
+5,Ethan Zhou,ethanzhou@bluefunds.com,Multi-Asset,11,Active
+6,Fatima Ali,fatimaali@bluefunds.com,Infrastructure,10,Active
+7,George Li,georgeli@bluefunds.com,Global Macro,15,Active
+8,Hannah Kim,hannahkim@bluefunds.com,Quant,6,Active
+9,Irene Novak,irenenovak@bluefunds.com,Real Estate,13,Active
+10,Jasper O'Neil,jasperoneil@bluefunds.com,Commodities,8,Active

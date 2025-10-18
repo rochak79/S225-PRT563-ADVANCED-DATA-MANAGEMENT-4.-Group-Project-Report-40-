@@ -1,0 +1,11 @@
+metric_id,metric_name,metric_code,category,unit_of_measurement,data_type,higher_is_better,status
+200,Carbon Intensity,CO2_INT,Environment,tCO2e/million$ revenue,decimal,FALSE,Active
+201,Water Usage,WATER_USE,Environment,ML,decimal,FALSE,Active
+202,Waste Recycled,WASTE_REC,Environment,%,decimal,TRUE,Active
+203,Board Diversity,BOARD_DIV,Social,%,decimal,TRUE,Active
+204,Injury Rate,INJURY_RT,Social,per 1k staff,decimal,FALSE,Active
+205,Data Breach Incidents,DATA_BR,Governance,count,int,FALSE,Active
+206,Whistleblower Cases,WHISTLE,Governance,count,int,FALSE,Active
+207,Renewables Share,REN_SHARE,Environment,%,decimal,TRUE,Active
+208,Gender Pay Gap,GPG,Social,%,decimal,FALSE,Active
+209,ESG Disclosure Score,DISC,Governance,/100,decimal,TRUE,Active

@@ -1,0 +1,11 @@
+fund_id,fund_code,fund_name,fund_type,esg_strategy,total_assets,inception_date,manager_id,minimum_esg_score
+10,F010,Blue Growth Fund,Equity,Best-in-class,250000000,1/01/2018,1,60
+11,F011,Sustainable Income,Fixed Income,Negative Screen,180000000,1/02/2018,2,61
+12,F012,Global Impact,Equity,Impact,320000000,1/03/2019,3,62
+13,F013,Climate Opportunities,Private Equity,Positive Tilt,210000000,1/04/2019,4,63
+14,F014,Green Infrastructure,Infrastructure,Impact,400000000,1/05/2020,5,64
+15,F015,Future Mobility,Equity,Thematic,150000000,1/06/2020,6,65
+16,F016,Clean Water Trust,Debt,Impact,130000000,1/01/2021,7,66
+17,F017,Renewables SP,Infrastructure,Best-in-class,500000000,1/02/2021,8,67
+18,F018,Low Carbon Index,Index,Best-in-class,600000000,1/03/2022,9,68
+19,F019,Health & Wellbeing,Equity,Thematic,140000000,1/04/2022,10,69
